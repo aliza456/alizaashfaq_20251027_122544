@@ -1,10 +1,9 @@
 def minmax_scale(X) -> list[list[float]]:
     """
-    Min-max scale each column of X to [0,1]. For column j:
-        (x - min_j) / (max_j - min_j)
+    Min-max scale each column to [0,1]. For column j:
+        (x - min_j)/(max_j - min_j)
     If max_j == min_j, return zeros for that column.
     Round each value to 4 decimals.
-    X is a list of rows (M x N).
     """
     if not X:
         return []
@@ -12,7 +11,6 @@ def minmax_scale(X) -> list[list[float]]:
     N = len(X[0]) if M > 0 else 0
     if N == 0:
         return [[] for _ in range(M)]
-    # compute per-column min and max
     mins = [float('inf')] * N
     maxs = [float('-inf')] * N
     for i in range(M):
@@ -23,7 +21,6 @@ def minmax_scale(X) -> list[list[float]]:
                 mins[j] = v
             if v > maxs[j]:
                 maxs[j] = v
-    # scale
     out = [[0.0 for _ in range(N)] for _ in range(M)]
     for i in range(M):
         for j in range(N):

@@ -1,26 +1,21 @@
-def kmeans_assign(points, centroids) -> list[int]:
+def perceptron_epoch(X, y, w, b, lr) -> [list[float], float]:
     """
-    Assign each point to the nearest centroid by Euclidean distance.
-    Break ties by choosing the smaller centroid index.
-    Returns list of centroid indices (0-based).
+    Single epoch of the binary perceptron.
+    Labels are -1 or +1. For each sample (in order), if y_i * (w·x + b) <= 0:
+        w = w + lr*y_i*x
+        b = b + lr*y_i
+    Returns [w, b].
     """
-    import math
+    def dot(a, b):
+        return sum(x*y for x, y in zip(a, b))
 
-    if not centroids:
-        return []
+    w = list(w)
+    b = float(b)
 
-    def sqdist(a, b):
-        # squared Euclidean distance
-        return sum((x - y) ** 2 for x, y in zip(a, b))
-
-    assignments = []
-    for p in points:
-        best_idx = 0
-        best_d = sqdist(p, centroids[0])
-        for j in range(1, len(centroids)):
-            d = sqdist(p, centroids[j])
-            if d < best_d or (d == best_d and j < best_idx):
-                best_d = d
-                best_idx = j
-        assignments.append(best_idx)
-    return assignments
+    for xi, yi in zip(X, y):
+        margin = yi * (dot(w, xi) + b)
+        if margin <= 0:
+            for j in range(len(w)):
+                w[j] += lr * yi * xi[j]
+            b += lr * yi
+    return [w, b]

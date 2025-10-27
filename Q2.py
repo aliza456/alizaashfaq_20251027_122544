@@ -1,25 +1,18 @@
-def entropy(y) -> float:
+def bow_transform(corpus, vocab) -> list[list[int]]:
     """
-    Compute Shannon entropy (base-2) of a label list.
-    If all labels are identical (or list is empty), return 0.0.
-    Result is rounded to 4 decimal places.
+    Simple bag-of-words transformer.
+    Tokenize by whitespace (lowercase assumed), count each vocab term per document.
+    Return a 2D list of counts with shape [len(corpus)][len(vocab)].
+    Terms not in vocab are ignored.
     """
-    n = len(y)
-    if n <= 1:
-        return 0.0
-    # count frequencies
-    counts = {}
-    for lab in y:
-        counts[lab] = counts.get(lab, 0) + 1
-    if len(counts) == 1:
-        return 0.0
-    # compute entropy base-2
-    h = 0.0
-    for c in counts.values():
-        p = c / n
-        if p > 0:
-            # change-of-base via / ln(2) to avoid importing math.log2 in some environments
-            # but we'll just use log2 where available.
-            import math
-            h -= p * math.log2(p)
-    return round(h, 4)
+    V = len(vocab)
+    index = {term: j for j, term in enumerate(vocab)}
+    out = []
+    for doc in corpus:
+        counts = [0] * V
+        for tok in doc.split():
+            j = index.get(tok)
+            if j is not None:
+                counts[j] += 1
+        out.append(counts)
+    return out
